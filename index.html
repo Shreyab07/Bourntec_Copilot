@@ -1,0 +1,68 @@
+<!-- index.html -->  
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+  <div class="container mt-5">
+
+    <h1>Code Generator</h1>
+
+    <form>
+      <textarea id="prompt" rows="4" placeholder="Enter prompt"></textarea>
+      <button type="submit">Generate Code</button>
+    </form>
+
+    <pre><code id="code"></code></pre>
+    
+    <button id="copy-code" style="display:none;">Copy Code</button>
+
+  </div>
+
+  <script>
+    // JavaScript code to handle form submission 
+    // Get DOM elements
+const form = document.querySelector('form');
+const codeDisplay = document.querySelector('#code');
+const copyButton = document.querySelector('#copy-code');
+
+form.addEventListener('submit', (e) => {
+
+  e.preventDefault();
+
+  // Get prompt  
+  const prompt = document.querySelector('#prompt').value;
+
+  // POST request 
+  fetch('/code', {
+    method: 'POST', 
+    body: new URLSearchParams({
+      'prompt': prompt
+    })
+  })
+  .then(response => response.text())
+  .then(code => {
+    codeDisplay.textContent = code;
+
+    hljs.highlightBlock(codeDisplay);
+    
+    copyButton.style.display = 'block';
+  });
+
+});
+
+// Copy code
+copyButton.addEventListener('click', () => {
+  navigator.clipboard.writeText(codeDisplay.textContent);
+}); 
+  </script>
+
+</body>
+</html>
