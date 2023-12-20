@@ -1,12 +1,12 @@
-<!-- index.html -->  
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Code Generator</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
-
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
 </head>
 
 <body>
@@ -15,54 +15,68 @@
 
     <h1>Code Generator</h1>
 
-    <form>
-      <textarea id="prompt" rows="4" placeholder="Enter prompt"></textarea>
-      <button type="submit">Generate Code</button>
+    <form class="row">
+      <div class="col-md-8">
+        <textarea id="prompt" class="form-control" rows="4" placeholder="Enter prompt"></textarea>
+      </div>
+      <div class="col-md-4">
+        <button type="submit" class="btn btn-primary btn-block">Generate Code</button>
+      </div>
     </form>
 
-    <pre><code id="code"></code></pre>
-    
-    <button id="copy-code" style="display:none;">Copy Code</button>
+    <div class="card mt-3">
+      <div class="card-body">
+        <h5 class="card-title">Generated Code</h5>
+        <pre><code id="code" class="hljs"></code></pre>
+        <button id="copy-code" class="btn btn-success btn-sm">Copy Code</button>
+      </div>
+    </div>
+
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-body">
+        Code copied successfully!
+      </div>
+    </div>
 
   </div>
 
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
   <script>
     // JavaScript code to handle form submission 
-    // Get DOM elements
-const form = document.querySelector('form');
-const codeDisplay = document.querySelector('#code');
-const copyButton = document.querySelector('#copy-code');
+    const form = document.querySelector('form');
+    const codeDisplay = document.querySelector('#code');
+    const copyButton = document.querySelector('#copy-code');
 
-form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-  e.preventDefault();
+      const prompt = document.querySelector('#prompt').value;
 
-  // Get prompt  
-  const prompt = document.querySelector('#prompt').value;
+      fetch('/code', {
+          method: 'POST',
+          body: new URLSearchParams({
+            'prompt': prompt
+          })
+        })
+        .then(response => response.text())
+        .then(code => {
+          codeDisplay.textContent = code;
 
-  // POST request 
-  fetch('/code', {
-    method: 'POST', 
-    body: new URLSearchParams({
-      'prompt': prompt
-    })
-  })
-  .then(response => response.text())
-  .then(code => {
-    codeDisplay.textContent = code;
+          hljs.highlightBlock(codeDisplay);
 
-    hljs.highlightBlock(codeDisplay);
-    
-    copyButton.style.display = 'block';
-  });
+          copyButton.style.display = 'block';
+        });
+    });
 
-});
-
-// Copy code
-copyButton.addEventListener('click', () => {
-  navigator.clipboard.writeText(codeDisplay.textContent);
-}); 
+    copyButton.addEventListener('click', () => {
+      navigator.clipboard.writeText(codeDisplay.textContent)
+        .then(() => $('.toast').toast('show'));
+    });
   </script>
 
 </body>
+
 </html>
