@@ -1,4 +1,7 @@
 # Bourntec_Copilot
-Bourntec copilot for the code suggestion
-<br>
-## your AI pair programmer
+
+
+## Bourntec copilot for the Code Generation and Code suggestion
+
+
+## This Copilot is your AI pair programmer
